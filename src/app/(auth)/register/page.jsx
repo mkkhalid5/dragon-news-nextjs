@@ -1,4 +1,5 @@
 "use client"
+import { authClient } from '@/lib/auth-client';
 import Link from 'next/link';
 import React from 'react';
 import { useForm } from 'react-hook-form';
@@ -12,12 +13,26 @@ const RegisterPage = () => {
         watch,
         formState: { errors } } = useForm();
 
-    const handleRegisterFunc = (data) => {
+    const handleRegisterFunc = async (data) => {
         const { email, name, password, photo } = data;
-
+        
+        const { data:res, error } = await authClient.signUp.email({
+            name: name, // required
+            email: email, // required
+            password: password, // required
+            image: photo,
+            callbackURL: "/",
+        });
+        console.log("DB", res);
+        if(error){
+            alert(error.message)
+        }
+        if(res){
+            alert("Sign up successfull");
+        }
     }
-    
-    
+
+
     return (
         <div className='container p-8 mx-auto min-h-[80vh] flex justify-center items-center bg-slate-50 mt-4'>
             <div className='p-16 rounded-xl bg-white shadow'>
@@ -28,15 +43,15 @@ const RegisterPage = () => {
                     <fieldset className="fieldset">
                         <legend className="fieldset-legend">Your Name</legend>
                         <input type="text" className="input" placeholder="Enter your name"
-                            {...register("name", {required: "Name field is required"})} />
-                            {errors.name && <p className='text-red-500'>{errors.name.message}</p>}
+                            {...register("name", { required: "Name field is required" })} />
+                        {errors.name && <p className='text-red-500'>{errors.name.message}</p>}
                     </fieldset>
 
                     <fieldset className="fieldset">
                         <legend className="fieldset-legend">Photo URL</legend>
                         <input type="text" className="input" placeholder="Enter your photo url"
-                            {...register("photo", {required: "Photo url is required"})} />
-                            {errors.photo && <p className='text-red-500'>{errors.photo.message}</p>}
+                            {...register("photo", { required: "Photo url is required" })} />
+                        {errors.photo && <p className='text-red-500'>{errors.photo.message}</p>}
                     </fieldset>
 
                     <fieldset className="fieldset">
