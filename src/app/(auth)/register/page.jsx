@@ -1,11 +1,13 @@
 "use client"
 import { authClient } from '@/lib/auth-client';
 import Link from 'next/link';
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 
 const RegisterPage = () => {
+     const [isShowPassword, setIsShowPassword] = useState(false);
 
     const {
         register,
@@ -15,8 +17,10 @@ const RegisterPage = () => {
 
     const handleRegisterFunc = async (data) => {
         const { email, name, password, photo } = data;
-        
-        const { data:res, error } = await authClient.signUp.email({
+
+       
+
+        const { data: res, error } = await authClient.signUp.email({
             name: name, // required
             email: email, // required
             password: password, // required
@@ -24,10 +28,10 @@ const RegisterPage = () => {
             callbackURL: "/",
         });
         console.log("DB", res);
-        if(error){
+        if (error) {
             alert(error.message)
         }
-        if(res){
+        if (res) {
             alert("Sign up successfull");
         }
     }
@@ -61,10 +65,12 @@ const RegisterPage = () => {
                         {errors.email && <p className='text-red-500'>{errors.email.message}</p>}
                     </fieldset>
 
-                    <fieldset className="fieldset">
+                    <fieldset className="fieldset relative">
                         <legend className="fieldset-legend">Password</legend>
-                        <input type="password" className="input" placeholder="Enter your password"
+                        <input type={isShowPassword ? "text":"password"} className="input" placeholder="Enter your password"
                             {...register("password", { required: "Password field is required" })} />
+                        <span className='absolute right-2 top-4' onClick={() => setIsShowPassword(!isShowPassword)
+                        }>{isShowPassword ? <FaEye /> : <FaEyeSlash />}</span>
                         {errors.password && <p className='text-red-500'>{errors.password.message}</p>}
                     </fieldset>
                     <p className='text-slate-500'><input type="checkbox" className="checkbox" /> Accept <Link href={"/term-conditions"}><button className='font-bold text-black'>Term & Conditions</button></Link></p>
